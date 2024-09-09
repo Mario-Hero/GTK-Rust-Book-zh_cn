@@ -1,4 +1,4 @@
-# GUI development with Rust and GTK 4
+# 基于 Rust 和 GTK 4 的 GUI 开发
 *作者：Julian Hofer，社区贡献； 翻译：陈竞阁*
 
 *本翻译基于 [gtk4-rs/book at master(github.com)](https://github.com/gtk-rs/gtk4-rs/tree/master/book) 2024年9月9日版本*

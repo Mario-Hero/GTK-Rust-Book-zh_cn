@@ -1,11 +1,11 @@
-# GUI development with Rust and GTK 4
+# 基于 Rust 和 GTK 4 的 GUI 开发
 
-[Introduction](introduction.md)
-- [Installation](installation.md)
+[简介](introduction.md)
+- [安装](installation.md)
     - [Linux](installation_linux.md)
     - [macOS](installation_macos.md)
     - [Windows](installation_windows.md)
-- [Project Setup](project_setup.md)
+- [项目配置](project_setup.md)
 - [Hello World!](hello_world.md)
 - [Widgets](widgets.md)
 - [GObject Concepts](g_object_concepts.md)
