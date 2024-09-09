@@ -1,24 +1,22 @@
 # Linux
 
-You first have to install rustup.
-You can find the up-to-date instructions on [rustup.rs](https://rustup.rs).
+首先您必须安装 rustup。 您可以在 [rustup.rs](https://rustup.rs/) 上找到最新的安装教程。
 
-Then install GTK 4 and the build essentials.
-To do this, execute the command belonging to the distribution you are using.
+然后安装 GTK 4 和 build essentials。 为此，请执行属于您正在使用的发行版的命令。
 
-Fedora and derivatives:
+Fedora 及其衍生版本：
 
 ```
 sudo dnf install gtk4-devel gcc
 ```
 
-Debian and derivatives:
+Debian 及其衍生版本：
 
 ```
 sudo apt install libgtk-4-dev build-essential
 ```
 
-Arch and derivatives:
+Arch 及其衍生版本：
 
 ```
 sudo pacman -S gtk4 base-devel
