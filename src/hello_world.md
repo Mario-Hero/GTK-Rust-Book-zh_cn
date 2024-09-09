@@ -1,52 +1,48 @@
 # Hello World!
 
-Now that we've got a working installation, let's get right into it!
+现在我们已经安装好了，让我们开始吧！
 
-At the very least, we need to create a [`gtk::Application`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.Application.html) instance with an [application id](https://developer.gnome.org/documentation/tutorials/application-id.html).
-For that we use the [builder pattern](https://rust-unofficial.github.io/patterns/patterns/creational/builder.html) which many `gtk-rs` objects support.
-Note that we also import the prelude to bring the necessary traits into scope.
+至少，我们需要创建一个带有[应用程序 ID](https://developer.gnome.org/documentation/tutorials/application-id.html) 的 [`gtk::Application`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.Application.html) 实例。 为此，我们使用了许多 `gtk-rs` 对象都支持的 [builder 模式](https://rust-unofficial.github.io/patterns/patterns/creational/builder.html)。 请注意，我们还导入了 prelude 以将必要的 trait 引入。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/hello_world/1/main.rs">listings/hello_world/1/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/hello_world/1/main.rs">listings/hello_world/1/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/hello_world/1/main.rs}}
 ```
 
-It builds fine, but nothing but a warning in our terminal appears.
+它构建正常，但终端中显示一条警告。
 
 ```
 GLib-GIO-WARNING: Your application does not implement g_application_activate()
 and has no handlers connected to the 'activate' signal. It should do one of these.
 ```
 
-GTK tells us that something should be called in its `activate` step.
-So let's create a [`gtk::ApplicationWindow`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.ApplicationWindow.html) there.
+GTK 告诉我们，应该在其 `activate`步骤中调用某些内容。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/hello_world/2/main.rs">listings/hello_world/2/main.rs</a>
+所以让我们在那里创建一个 [`gtk::ApplicationWindow`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.ApplicationWindow.html)。
+
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/hello_world/2/main.rs">listings/hello_world/2/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/hello_world/2/main.rs}}
 ```
-That is better!
+这样好多了！
 
 <div style="text-align:center"><img src="img/hello_world_empty.png" alt="An empty window with a header bar with label 'My GTK App'"/></div>
 
-Normally we expect to be able to interact with the user interface.
-Also, the name of the chapter suggests that the phrase "Hello World!" will be involved.
+通常，我们希望用户能够与界面进行交互。 
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/hello_world/3/main.rs">listings/hello_world/3/main.rs</a>
+此外，章节的名称表示软件将包含 “Hello World！”。
+
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/hello_world/3/main.rs">listings/hello_world/3/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/hello_world/3/main.rs:build_ui}}
 ```
 
-> If you look closely at the code snippet you will notice that it has a small eye symbol on its top right.
-> After you press on it you can see the full code of the listing.
-> We will use this throughout the book to hide details which are not important to bring the message across.
-> Pay attention to this if you want to write apps by following the book step-by-step.
-> Here, we've hidden that we brought `gtk::Button` into scope.
+> 如果您仔细查看这段代码，您会注意到它的右上角有一个小眼睛符号。 按下它后，您可以看到完整代码。 我们将在整本书中使用它来隐藏那些对传达信息并不重要的细节。 如果您想按照本书一步步编写程序，请注意这一点。 在这里，我们隐藏了我们引入`gtk::Button`的内容。
 
-There is now a button and if we click on it, its label becomes "Hello World!".
+现在有一个按钮，如果我们单击它，它的标签将变为 “Hello World！”。
 
 <div style="text-align:center">
  <video autoplay muted loop>
@@ -55,5 +51,5 @@ There is now a button and if we click on it, its label becomes "Hello World!".
  </video>
 </div>
 
-Wasn't that hard to create our first `gtk-rs` app, right?
-Let's now get a better understanding of what we did here.
+创建我们的第一个 `gtk-rs` 应用程序不是很难，对吧？ 现在让我们更好地了解我们到底在这里做了什么。
+

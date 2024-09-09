@@ -1,10 +1,8 @@
-# Memory Management
+# 内存管理
 
-Memory management when writing a gtk-rs app can be a bit tricky.
-Let's have a look why that is the case and how to deal with that.
+在编写 gtk-rs 程序时，内存管理可能有点棘手。 让我们来看看为什么会出现这种情况以及如何处理。 
 
-With our first example, we have window with a single button.
-Every button click should increment an integer `number` by one.
+在第一个示例中，我们的窗口只有一个按钮。 每点击一次按钮，一个整数变量  `number` 就会自增一次。
 
 ```rust ,no_run,compile_fail
 #use gtk::prelude::*;
@@ -53,8 +51,7 @@ fn build_ui(application: &Application) {
 }
 ```
 
-The Rust compiler refuses to compile this application while spitting out multiple error messages.
-Let's have a look at them one by one.
+Rust 编译器拒绝编译这个程序，同时还吐出了多条错误信息。 让我们逐一查看。
 
 ```console
 
@@ -75,10 +72,7 @@ help: to force the closure to take ownership of `number` (and any other referenc
    |  
 ```
 
-Our closure only borrows `number`.
-Signal handlers in GTK require `'static` lifetimes for their references, so we cannot borrow a variable that only lives for the scope of the function `build_ui`.
-The compiler also suggests how to fix this.
-By adding the `move` keyword in front of the closure, `number` will be moved into the closure.
+我们的闭包只借用了 `number`. GTK 中的信号处理器要求其引用具有 "静态(``static`)生命周期"，因此我们不能借用一个只在 `build_ui` 函数作用域中存在的变量。 编译器也给出了解决方法。 在闭包前面添加 `move` 关键字，`number `就会被移入闭包。
 
 ```rust ,no_run,compile_fail
 #use gtk::prelude::*;
@@ -127,7 +121,7 @@ By adding the `move` keyword in front of the closure, `number` will be moved int
 #}
 ```
 
-This still leaves the following error message:
+但这样仍然会出现以下错误信息：
 
 ```console
 
@@ -137,108 +131,92 @@ error[E0594]: cannot assign to `number`, as it is a captured variable in a `Fn` 
    |                                              ^^^^^^^^^^^ cannot assign
 ```
 
-In order to understand that error message we have to understand the difference between the three closure traits `FnOnce`, `FnMut` and `Fn`.
-APIs that take closures implementing the `FnOnce` trait give the most freedom to the API consumer.
-The closure is called only once, so it can even consume its state.
-Signal handlers can be called multiple times, so they cannot accept `FnOnce`.
+为了理解该错误信息，我们必须了解 `FnOnce`、`FnMut` 和 `Fn` 这三种闭包(closure) trait 之间的区别。 使用实现 `FnOnce` 特性的闭包的 API 给 API 消费者提供了最大的自由度。 闭包只被调用一次，因此它甚至可以使用自己的状态。 信号处理器可以被多次调用，所以它们不能接受 `FnOnce`。 
 
-The more restrictive `FnMut` trait doesn't allow closures to consume their state, but they can still mutate it.
-Signal handlers can't allow this either, because they can be called from inside themselves.
-This would lead to multiple mutable references which the borrow checker doesn't appreciate at all.
+限制性更强的 `FnMut` trait 不允许闭包消耗其状态，但它们仍可以对其进行修改。 信号处理器也不允许这样做，因为它们可以从自身内部调用。 这将导致多个可变引用，而借用检查器根本不喜欢这种情况。 
 
-This leaves `Fn`.
-State can be immutably borrowed, but then how can we modify `number`?
-We need a data type with interior mutability like [`std::cell::Cell`](https://doc.rust-lang.org/std/cell/struct.Cell.html).
+这样就只剩下 `Fn`. 状态可以不可变地借用，但我们如何修改 `number` 呢？ 我们需要一种具有内部可变性的数据类型，比如 [`std::cell::Cell`](https://doc.rust-lang.org/std/cell/struct.Cell.html).
 
-> The `Cell` class is only suitable for objects that implement the [`Copy`](https://doc.rust-lang.org/core/marker/trait.Copy.html) trait.
-> For other objects, [`RefCell`](https://doc.rust-lang.org/std/cell/struct.RefCell.html) is the way to go.
-> You can learn more about interior mutability in this [section](https://marabos.nl/atomics/basics.html#interior-mutability) of the book _Rust Atomics and Locks_.
+> `Cell` 只适用于实现了 [`Copy`](https://doc.rust-lang.org/core/marker/trait.Copy.html) trait 的对象。对于其他对象，则应使用[`RefCell`](https://doc.rust-lang.org/std/cell/struct.RefCell.html). 
+> 有关内部可变性的更多信息，请参见《Rust Atomics and Locks》一书中的[这一部分](https://marabos.nl/atomics/basics.html#interior-mutability)。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_memory_management/2/main.rs">listings/g_object_memory_management/1/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_memory_management/2/main.rs">listings/g_object_memory_management/1/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_memory_management/1/main.rs:build_ui}}
 ```
 
-This now compiles as expected.
-Let's try a slightly more complicated example: two buttons which both modify the same `number`.
-For that, we need a way that both closures take ownership of the same value?
+现在编译结果符合预期。 
 
-That is exactly what the [`std::rc::Rc`](https://doc.rust-lang.org/std/rc/struct.Rc.html) type is there for.
-`Rc` counts the number of strong references created via [`Clone::clone`](https://doc.rust-lang.org/std/clone/trait.Clone.html#tymethod.clone) and released via [`Drop::drop`](https://doc.rust-lang.org/std/ops/trait.Drop.html#tymethod.drop), and only deallocates the value when this number drops to zero.
-If we want to modify the content of our [`Rc`](https://doc.rust-lang.org/std/rc/struct.Rc.html),
-we can again use the [`Cell`](https://doc.rust-lang.org/std/cell/struct.Cell.html) type.
+让我们举一个稍微复杂一点的例子：两个按钮都修改了同一个数字`number`。 为此，我们需要一种方法，让两个闭包都拥有同一个值的所有权？
+
+这正是 [`std::rc::Rc`](https://doc.rust-lang.org/std/rc/struct.Rc.html) 类型的作用。 
+
+`Rc` 会计算通过 [`Clone::clone`](https://doc.rust-lang.org/std/clone/trait.Clone.html#tymethod.clone) 创建和通过 [`Drop::drop`](https://doc.rust-lang.org/std/ops/trait.Drop.html#tymethod.drop) 释放的强引用的数量，只有当这个数量降为零时，才会释放这个值。 
+
+如果我们想修改 [`Rc`](https://doc.rust-lang.org/std/rc/struct.Rc.html)的内容，可以再次使用 [`Cell`](https://doc.rust-lang.org/std/cell/struct.Cell.html) 类型。
 
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_memory_management/2/main.rs">listings/g_object_memory_management/2/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_memory_management/2/main.rs">listings/g_object_memory_management/2/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_memory_management/2/main.rs:callback}}
 ```
 
-It is not very nice though to fill the scope with temporary variables like `number_copy`.
-We can improve that by using the [`glib::clone!`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/macro.clone.html) macro.
+不过，用临时变量（如 number_copy）来填充作用域并不是一件好事。 
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_memory_management/3/main.rs">listings/g_object_memory_management/3/main.rs</a>
+我们可以使用 [`glib::clone!`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/macro.clone.html) 宏来改善这种情况。
+
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_memory_management/3/main.rs">listings/g_object_memory_management/3/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_memory_management/3/main.rs:callback}}
 ```
 
-Just like `Rc<Cell<T>>`, GObjects are reference-counted and mutable.
-Therefore, we can pass the buttons the same way to the closure as we did with `number`.
+就像 `Rc<Cell<T>>`一样，GObject 也是引用计数和可变的。 因此，我们可以像传递`number`一样将按钮传递给闭包。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_memory_management/4/main.rs">listings/g_object_memory_management/4/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_memory_management/4/main.rs">listings/g_object_memory_management/4/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_memory_management/4/main.rs:callback}}
 ```
 
-If we now click on one button, the other button's label gets changed.
+如果我们现在点击其中一个按钮，另一个按钮的标签就会改变。 
 
-But whoops!
-Did we forget about one annoyance of reference-counted systems?
-Yes we did: [reference cycles](https://doc.rust-lang.org/book/ch15-06-reference-cycles.html).
-`button_increase` holds a strong reference to `button_decrease` and vice-versa.
-A strong reference keeps the referenced value from being deallocated.
-If this chain leads to a circle, none of the values in this cycle ever get deallocated.
-With weak references we can break this cycle, because they don't keep their value alive but instead provide a way to retrieve a strong reference if the value is still alive.
-Since we want our apps to free unneeded memory, we should use weak references for the buttons instead.
+但是，哎呀！ 我们是不是忘了引用计数系统的一个恼人之处？是的：[循环引用](https://doc.rust-lang.org/book/ch15-06-reference-cycles.html).。`button_increase` 持有 `button_decrease` 的强引用，反之亦然。 强引用可以防止引用的值被释放。 如果这个链条导致一个循环，那么这个循环中的所有值都不会被释放。 使用弱引用可以打破这种循环，因为弱引用不会使其值存活，而是提供了一种方法，可以在该值仍然存活时检索强引用。 由于我们希望应用程序释放不需要的内存，因此我们应该在按钮上使用弱引用。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_memory_management/5/main.rs">listings/g_object_memory_management/5/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_memory_management/5/main.rs">listings/g_object_memory_management/5/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_memory_management/5/main.rs:callback}}
 ```
 
-The reference cycle is broken.
-Every time the button is clicked, `glib::clone` tries to upgrade the weak reference.
-If we now for example click on one button and the other button is not there anymore, the callback will be skipped.
-Per default, it immediately returns from the closure with `()` as return value.
-In case the closure expects a different return value `@default-return` can be specified.
+现在循环引用被破坏了。 
 
-Notice that we move `number` in the second closure.
-If we had moved weak references in both closures, nothing would have kept `number` alive and the closure would have never been called.
-Thinking about this, `button_increase` and `button_decrease` are also dropped at the end of the scope of `build_ui`.
-Who then keeps the buttons alive?
+每次点击按钮时，`glib::clone` 都会尝试升级弱引用。 例如，如果我们现在点击了一个按钮，而另一个按钮已不存在，回调将被跳过。 
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_memory_management/5/main.rs">listings/g_object_memory_management/5/main.rs</a>
+默认情况下，它会立即从闭包返回，返回值为 `()` 。 如果闭包期望不同的返回值，可以指定 `@default-return`。 
+
+请注意，我们在第二个闭包中移动了 `number`。 如果我们在两个闭包中都移动了弱引用，那么没有任何东西能让 `number` 继续存活，闭包也不会被调用。 考虑到这一点，`button_increase` 和 `button_decrease` 也会在 `build_ui` 的作用域结束时被丢弃。 那么谁来保持按钮的存活呢？
+
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_memory_management/5/main.rs">listings/g_object_memory_management/5/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_memory_management/5/main.rs:box_append}}
 ```
 
-When we append the buttons to the `gtk_box`, `gtk_box` keeps a strong reference to them.
+当我们将按钮附加到 `gtk_box` 时，`gtk_box` 会保留对按钮的强引用。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_memory_management/5/main.rs">listings/g_object_memory_management/5/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_memory_management/5/main.rs">listings/g_object_memory_management/5/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_memory_management/5/main.rs:window_child}}
 ```
 
-When we set `gtk_box` as child of `window`, `window` keeps a strong reference to it.
-Until we close the `window` it keeps `gtk_box` and with it the buttons alive.
-Since our application has only one window, closing it also means exiting the application.
+当我们将 `gtk_box` 设置为 `window` 的子窗口时，`window` 会保持对它的强引用。 
 
-As long as you use weak references whenever possible, you will find it perfectly doable to avoid memory cycles within your application.
-Without memory cycles, you can rely on GTK to properly manage the memory of GObjects you pass to it.
+直到我们关闭窗口，它都会保持 `gtk_box` 以及按钮的存活。 
+
+由于我们的应用程序只有一个窗口，关闭窗口也就意味着退出应用程序。 
+
+只要尽可能使用弱引用，您就会发现完全可以避免应用程序中的循环引用。 在没有循环引用的情况下，您可以依靠 GTK 来正确管理您传递给它的 GObject 的内存。

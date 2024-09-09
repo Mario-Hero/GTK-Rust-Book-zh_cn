@@ -19,7 +19,7 @@ GTK 4 是用 C 语言编写的、流行的、跨平台部件工具箱的最新�
 
 
 
-## 这本书是给谁的
+## 这本书是写给谁的
 
 本书假定您了解 Rust 代码。
 
@@ -49,4 +49,4 @@ GTK 4 是用 C 语言编写的、流行的、跨平台部件工具箱的最新�
 
 The book itself is licensed under the [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by/4.0/).
 The only exception are the code snippets which are licensed under the [MIT license](https://github.com/gtk-rs/gtk4-rs/blob/master/README.md).
-The translation of this book is licensed under the [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by/4.0/).
+This translation of this book is licensed under the [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by/4.0/).

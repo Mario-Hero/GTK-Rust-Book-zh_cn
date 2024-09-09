@@ -1,13 +1,11 @@
-# GObject Concepts
+# GObject 相关概念
 
-GTK is an object-oriented framework.
-It is written in C, which does not support object-orientation out of the box.
-That is why GTK relies on the GObject library to provide the object system.
+GTK 是一个面向对象的框架。 它是用 C 语言编写的，而C 语言不支持开箱即用的面向对象。 这就是为什么 GTK 依赖 GObject 库来提供对象系统的原因。
 
-We have already learned that `gtk-rs` maps GObject concepts, like inheritance and interfaces, to Rust traits.
-In this chapter we will learn:
-- How memory of GObjects is managed
-- How to create our own GObjects via subclassing
-- How to deal with generic values
-- How to use properties
-- How to emit and receive signals
+我们已经了解了 `gtk-rs` 会将 GObject 概念（如继承和接口）映射到 Rust 的 trait 上。 在本章中，我们将学习：
+
+- 如何管理 GObject 的内存
+- 如何通过子类化创建我们自己的 GObject
+- 如何处理泛型值
+- 如何使用属性
+- 如何发送和接收信号

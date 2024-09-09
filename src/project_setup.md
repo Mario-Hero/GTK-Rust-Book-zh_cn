@@ -1,31 +1,31 @@
-# Project Setup
+# 项目设置
 
-Let's begin by installing all necessary tools.
-First, follow the instructions on the [GTK website](https://www.gtk.org/docs/installations/) in order to install GTK 4.
-Then install Rust with [rustup](https://rustup.rs/).
+让我们从安装所有必要的工具开始。 
 
-Now, create a new project and move into the newly created folder by executing:
+首先，按照 [GTK 网站](https://www.gtk.org/docs/installations/)上的说明安装 GTK 4。 然后使用 [rustup](https://rustup.rs/) 安装 Rust。
+
+现在，通过执行以下命令，创建一个新项目并移动到新创建的文件夹中：
 ```
 cargo new my-gtk-app
 cd my-gtk-app
 ```
 
-Find out the GTK 4 version on your machine by running
+通过运行以下命令来获取电脑上的 GTK 4 版本
 
 ```
 pkg-config --modversion gtk4
 ```
 
-Use this information to add the [gtk4 crate](https://crates.io/crates/gtk4) to your dependencies in `Cargo.toml`.
-At the time of this writing the newest version is `4.12`.
+运行以下命令将 [gtk4 crate](https://crates.io/crates/gtk4) 添加到 `Cargo.toml` 依赖项。在撰写本文时，最新GTK 4 版本是 `4.12`
 
 ```
 cargo add gtk4 --rename gtk --features v4_12
 ```
 
-By specifying this feature you opt-in to API that was added with minor releases of GTK 4.
+通过指定此功能，您可以选择使用 GTK 4 次版本中添加的 API。
 
-Now, you can run your application by executing:
+现在，您可以通过执行以下命令来运行您的应用程序：
+
 ```
 cargo run
 ```
