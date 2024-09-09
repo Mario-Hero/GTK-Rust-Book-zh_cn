@@ -1,4 +1,8 @@
-# The GTK-Rust Book
+# GTK-Rust-Book-zh_cn
+
+本仓库为 The GTK-Rust Book 的中文翻译，正在施工中。
+
+This repo is the Chinese translation of The GTK Rust Book and is currently under construction.
 
 - [Stable](https://gtk-rs.org/gtk4-rs/stable/latest/book)
 - [Development](https://gtk-rs.org/gtk4-rs/git/book)
