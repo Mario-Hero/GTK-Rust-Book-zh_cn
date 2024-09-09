@@ -4,9 +4,13 @@
 
 *本翻译基于 [gtk4-rs/book at master(github.com)](https://github.com/gtk-rs/gtk4-rs/tree/master/book) 2024年9月9日版本*。
 
+翻译后的文本位于我的[个人网站](https://mario-hero.github.io/gtk-book-zh_cn/)上。
+
 This repo is the Chinese translation of The GTK Rust Book and is currently under construction. It has now been translated to the "Installation" section.
 
 *This translation is based on [gtk4-rs/book at master(github.com)](https://github.com/gtk-rs/gtk4-rs/tree/master/book) version dated September 9th, 2024*
+
+The translated text can be found on my [personal website](https://mario-hero.github.io/gtk-book-zh_cn/).
 
 - [Stable](https://gtk-rs.org/gtk4-rs/stable/latest/book)
 - [Development](https://gtk-rs.org/gtk4-rs/git/book)
