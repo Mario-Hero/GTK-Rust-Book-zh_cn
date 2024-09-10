@@ -1,37 +1,32 @@
-# Properties
+# 属性
 
-Properties provide a public API for accessing state of GObjects.
+属性(Properties)为访问 GObject 的状态提供了一个公共 API.
 
-Let's see how this is done by experimenting with the [`Switch`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.Switch.html) widget.
-One of its properties is called [active](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.Switch.html#active).
-According to the GTK docs, it can be read and be written to.
-That is why `gtk-rs` provides corresponding [`is_active`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.Switch.html#method.is_active) and [`set_active`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.Switch.html#method.set_active) methods.
+让我们通过 `Switch` 控件来看看如何实现这一点。 它的一个属性叫做  [active](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.Switch.html#active). 根据 GTK 文档，它可以被读取和写入。 因此，`gtk-rs` 提供了相应的  [`is_active`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.Switch.html#method.is_active) 和 [`set_active`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.Switch.html#method.set_active) 方法。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/1/main.rs">listings/g_object_properties/1/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/1/main.rs">listings/g_object_properties/1/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_properties/1/main.rs:switch}}
 ```
 
-Properties can not only be accessed via getters & setters, they can also be bound to each other.
-Let's see how that would look like for two `Switch` instances.
+属性不仅可以通过 getter 和 setter 访问，还可以相互绑定。 让我们看看两个 `Switch` 实例是如何绑定的。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/2/main.rs">listings/g_object_properties/2/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/2/main.rs">listings/g_object_properties/2/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_properties/2/main.rs:switches}}
 ```
 
-In our case, we want to bind the "active" property of `switch_1` to the "active" property of `switch_2`.
-We also want the binding to be bidirectional, so we specify by calling the [`bidirectional`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/object/struct.BindingBuilder.html#method.bidirectional) method.
+在本例中，我们希望将 `switch_1` 的 "active" 属性与 `switch_2` 的 "active" 属性绑定。 我们还希望绑定是双向的，因此通过调用 [`bidirectional`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/object/struct.BindingBuilder.html#method.bidirectional) 方法来指定。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/2/main.rs">listings/g_object_properties/2/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/2/main.rs">listings/g_object_properties/2/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_properties/2/main.rs:bind_active}}
 ```
 
-Now when we click on one of the two switches, the other one is toggled as well.
+现在，当我们点击两个开关中的一个时，另一个也会被切换。
 
 <div style="text-align:center">
  <video autoplay muted loop>
@@ -40,57 +35,46 @@ Now when we click on one of the two switches, the other one is toggled as well.
  </video>
 </div>
 
-## Adding Properties to Custom GObjects
+## 给自定义 GObject 添加属性
 
-We can also add properties to custom GObjects.
-We can demonstrate that by binding the `number` of our `CustomButton` to a property.
-Most of the work is done by the [`glib::Properties`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/derive.Properties.html) derive macro.
-We tell it that the wrapper type is `super::CustomButton`.
-We also annotate `number`, so that macro knows that it should create a property "number" that is readable and writable.
-It also generates [wrapper methods](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/derive.Properties.html#generated-wrapper-methods) which we are going to use later in this chapter.
+我们还可以为自定义 GObject 添加属性。 我们可以通过将 `CustomButton` 的 `number` 绑定到一个属性来演示这一点。 大部分工作由 [`glib::Properties`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/derive.Properties.html) 派生宏(derive macro)完成。 我们告诉它封装类型是 `super::CustomButton`。 我们还给 `number` 添加了注释，这样宏就知道它应该创建一个可读可写的属性 "number"。 宏还会生成本章稍后将使用的[封装方法](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/derive.Properties.html#generated-wrapper-methods)。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/3/custom_button/imp.rs">listings/g_object_properties/3/custom_button/imp.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/3/custom_button/imp.rs">listings/g_object_properties/3/custom_button/imp.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_properties/3/custom_button/imp.rs:custom_button}}
 ```
 
-The [`glib::derived_properties`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/attr.derived_properties.html) macro generates boilerplate that is the same for every GObject that generates its properties with the `Property` macro.
-In `constructed` we use our new property "number" by binding the "label" property to it.
-`bind_property` converts the integer value of "number" to the string of "label" on its own.
-Now we don't have to adapt the label in the "clicked" callback anymore.
+[`glib::derived_properties`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/attr.derived_properties.html) 宏为每个使用 `Property` 宏生成属性的 GObject 生成了模板。 在 `constructed` 中，我们通过绑定 "label "属性来使用新属性 "number"。`bind_property` 会自行将 "number "的整数值转换为 "label "的字符串。 现在，我们不必再在 "clicked" 回调函数中调整标签了。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/3/custom_button/imp.rs">listings/g_object_properties/3/custom_button/imp.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/3/custom_button/imp.rs">listings/g_object_properties/3/custom_button/imp.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_properties/3/custom_button/imp.rs:object_impl}}
 ```
 
-We also have to adapt the `clicked` method.
-Before we modified `number` directly, now we can use the generated wrapper methods `number` and `set_number`.
-This way the "notify" signal will be emitted, which is necessary for the bindings to work as expected.
+我们还必须调整 `clicked` 方法。 以前我们直接修改 `number`，现在我们可以使用生成的封装方法 `number` 和 `set_number`。 这样就会发出 "notify "信号，这对于绑定正常工作是必要的。
 
 ```rust
 {{#rustdoc_include ../listings/g_object_properties/3/custom_button/imp.rs:button_impl}}
 ```
 
-Let's see what we can do with this by creating two custom buttons.
+让我们通过创建两个自定义按钮来看看能做些什么。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/3/main.rs">listings/g_object_properties/3/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/3/main.rs">listings/g_object_properties/3/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_properties/3/main.rs:buttons}}
 ```
 
-We have already seen that bound properties don't necessarily have to be of the same type.
-By leveraging [`transform_to`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/object/struct.BindingBuilder.html#method.transform_to) and [`transform_from`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/object/struct.BindingBuilder.html#method.transform_from), we can assure that `button_2` always displays a number which is 1 higher than the number of `button_1`.
+我们已经看到，绑定的属性不一定必须是同一类型。 利用 [`transform_to`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/object/struct.BindingBuilder.html#method.transform_to) 和 [`transform_from`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/object/struct.BindingBuilder.html#method.transform_from), 我们可以确保 `button_2` 显示的数字总是比 `button_1` 显示的数字大 1.
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/3/main.rs">listings/g_object_properties/3/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/3/main.rs">listings/g_object_properties/3/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_properties/3/main.rs:bind_numbers}}
 ```
-Now if we click on one button, the "number" and "label" properties of the other button change as well.
+现在，如果我们点击其中一个按钮，另一个按钮的 "number" 和 "label" 属性也会随之改变。
 
 <div style="text-align:center">
  <video autoplay muted loop>
@@ -99,20 +83,19 @@ Now if we click on one button, the "number" and "label" properties of the other 
  </video>
 </div>
 
-Another nice feature of properties is, that you can connect a callback to the event, when a property gets changed.
-For example like this:
+属性的另一个优点是，当属性发生变化时，可以将回调连接到事件。 例如：
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/3/main.rs">listings/g_object_properties/3/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_properties/3/main.rs">listings/g_object_properties/3/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_properties/3/main.rs:connect_notify}}
 ```
 
-Now, whenever the "number" property gets changed, the closure gets executed and prints the current value of "number" to standard output.
+现在，每当 "number" 属性发生变化时，闭包就会被执行，并将 "number" 的当前值打印到标准输出中。 
 
-Introducing properties to your custom GObjects is useful if you want to
-- bind state of (different) GObjects
-- notify consumers whenever a property value changes
+将属性引入您的自定义 GObject 将会非常有用，如果您想：
 
-Note that it has a (computational) cost to send a signal each time the value changes.
-If you only want to expose internal state, adding getter and setter methods is the better option.
+- 绑定（不同）GObject 的状态
+- 在属性值发生变化时通知消费者
+
+请注意，每次值发生变化时发送信号都会产生（计算）代价。 如果您只想暴露内部状态，添加 getter 和 setter 方法是更好的选择。

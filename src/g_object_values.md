@@ -1,13 +1,12 @@
-# Generic Values
+# 泛型值
 
-Some GObject-related functions rely on generic values for their arguments or return parameters.
-Since GObject introspection works through a C interface, these functions cannot rely on any powerful Rust concepts.
-In these cases [`glib::Value`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/value/struct.Value.html) or [`glib::Variant`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/variant/struct.Variant.html) are used.
+一些与 GObject 相关的函数依赖于其参数或返回参数的泛型。 由于 GObject 的内省是通过 C 语言接口工作的，因此这些函数不能依赖于任何强大的 Rust 概念。 在这种情况下，需要使用[`glib::Value`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/value/struct.Value.html) 或 [`glib::Variant`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/variant/struct.Variant.html).
+
+
 
 ## Value
 
-Let's start with `Value`.
-Conceptually, a `Value` is similar to a Rust `enum` defined like this:
+我们先从 `Value` 开始。从概念上讲，`Value` 类似 Rust 的 `enum` ，定义如下：
 
 ```rust, no_run,noplayground
 enum Value <T> {
@@ -25,58 +24,52 @@ enum Value <T> {
 }
 ```
 
-For example, this is how you would use a `Value` representing an `i32`.
+例如，您可以这样使用`Value` 代表  `i32` 的值。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_values/1/main.rs">listings/g_object_values/1/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_values/1/main.rs">listings/g_object_values/1/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_values/1/main.rs:i32}}
 ```
 
-Also note that in the `enum` above boxed types such as `String` or `glib::Object` are wrapped in an `Option`.
-This comes from C, where every boxed type can potentially be `None` (or `NULL` in C terms).
-You can still access it the same way as with the `i32` above.
-[`get`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/value/struct.Value.html#method.get) will then not only return `Err` if you specified the wrong type, but also if the `Value` represents `None`.
+还要注意的是，在上述枚举中，`String` 或 `glib::Object` 等 [boxed](https://gnome.pages.gitlab.gnome.org/libsoup/gobject/gobject-Boxed-Types.html) 类型被封装在一个 `Option` 中。 这源于 C 语言，在 C 语言中，每个 boxed 类型都有可能是 `None`（或 C 语言中的 `NULL`）。 您仍然可以按照与上述 `i32` 相同的方式访问它。如果指定了错误的类型，[`get`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/value/struct.Value.html#method.get)  会返回 `Err`，而且如果 `Value` 代表 `None`，也会返回 `Err`。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_values/1/main.rs">listings/g_object_values/1/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_values/1/main.rs">listings/g_object_values/1/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_values/1/main.rs:string}}
 ```
 
-If you want to differentiate between specifying the wrong type and a `Value` representing `None`, just call `get::<Option<T>>` instead.
+如果要区分是指定了错误的类型还是 `Value` 值为 `None` ，只需调用 `get::<Option<T>>` 即可。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_values/1/main.rs">listings/g_object_values/1/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_values/1/main.rs">listings/g_object_values/1/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_values/1/main.rs:string_none}}
 ```
 
-We will use `Value` when we deal with properties and signals later on.
+我们将在后面处理属性和信号时使用 `Value`。
+
+
 
 ## Variant
 
-A `Variant` is used whenever data needs to be serialized, for example for sending it to another process or over the network, or for storing it on disk.
-Although `GVariant` supports arbitrarily complex types, the Rust bindings are currently limited to `bool`, `u8`, `i16`, `u16`, `i32`, `u32`, `i64`, `u64`, `f64`, `&str`/`String`, and [`VariantDict`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/struct.VariantDict.html).
-Containers of the above types are possible as well, such as `HashMap`, `Vec`, `Option`, tuples up to 16 elements, and `Variant`.
-Variants can even be [derived](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib_macros/derive.Variant.html#) from Rust structs as long as its members can be represented by variants.
+当数据需要序列化时，例如将数据发送到另一个进程或通过网络，或将数据存储到磁盘时，就会用到`Variant`. 虽然 `GVariant` 支持任意复杂的类型，但 Rust 绑定目前仅限于`bool`, `u8`, `i16`, `u16`, `i32`, `u32`, `i64`, `u64`, `f64`, `&str`/`String` 和 [`VariantDict`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/struct.VariantDict.html). 上述类型的容器也可以使用，如 `HashMap`、`Vec`、`Option`、最多 16 个元素的元组(typle)和 `Variant`。 只要 Rust 结构体的成员可以用`Variant`表示，`Variant`甚至可以从 Rust 结构体[派生](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib_macros/derive.Variant.html#)。
 
-In the most simple case, converting Rust types to `Variant` and vice-versa is very similar to the way it worked with `Value`.
+在最简单的情况下，将 Rust 类型转换为 `Variant` 或反向转换，与处理 `Value` 的方式非常相似。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_values/2/main.rs">listings/g_object_values/2/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_values/2/main.rs">listings/g_object_values/2/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_values/2/main.rs:i32}}
 ```
 
-However, a `Variant` is also able to represent containers such as [`HashMap`](https://doc.rust-lang.org/std/collections/struct.HashMap.html) or [`Vec`](https://doc.rust-lang.org/std/vec/struct.Vec.html).
-The following snippet shows how to convert between `Vec` and `Variant`.
-More examples can be found in the [docs](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/variant/index.html).
+不过，`Variant` 也可以表示 `HashMap` 或 `Vec` 等容器。 下面的代码段展示了如何在 `Vec` 和 `Variant` 之间进行转换。 更多示例请参见[文档](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/variant/index.html)。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_values/2/main.rs">listings/g_object_values/2/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_values/2/main.rs">listings/g_object_values/2/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/g_object_values/2/main.rs:vec}}
 ```
 
-We will use `Variant` when saving settings using [`gio::Settings`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/struct.Settings.html) or activating actions via [`gio::Action`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/struct.Action.html).
+我们将在使用  [`gio::Settings`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/struct.Settings.html)  保存设置或通过 [`gio::Action`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/struct.Action.html) 激活操作时使用 `Variant`.
