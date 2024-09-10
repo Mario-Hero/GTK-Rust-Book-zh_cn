@@ -14,7 +14,7 @@ GObject
     ╰── Button
 ```
 
-[GTK 文档](https://docs.gtk.org/gtk4/class.Button.html#implements)还告诉我们，`Button`实现了 `GtkAccessible``GtkActionable``GtkBuildable``GtkConstraintTarget` 接口。
+[GTK 文档](https://docs.gtk.org/gtk4/class.Button.html#implements)还告诉我们，`Button`实现了 `GtkAccessible`, `GtkActionable`, `GtkBuildable`, `GtkConstraintTarget` 接口。
 
 现在让我们将其与 `gtk-rs` 中的 `Button` 结构进行比较。 [gtk-rs 文档](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.Button.html#implements)告诉我们它实现了哪些 trait。 我们发现这些 trait 在 GTK 文档中要么有相应的基类，要么有接口。 在 “Hello World” 程序中，我们希望对按钮单击做出反应。 这种行为是按钮特有的，因此我们希望在 `ButtonExt` trait 中找到合适的方法。 而事实上，`ButtonExt` 包含了 [`connect_clicked`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/prelude/trait.ButtonExt.html#tymethod.connect_clicked) 方法。
 
