@@ -10,7 +10,7 @@
 - [控件](widgets.md)
 - [GObject 相关概念](g_object_concepts.md)
     - [内存管理](g_object_memory_management.md)
-    - [Subclassing](g_object_subclassing.md)
+    - [子类化](g_object_subclassing.md)
     - [Generic Values](g_object_values.md)
     - [Properties](g_object_properties.md)
     - [Signals](g_object_signals.md)
