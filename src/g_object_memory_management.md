@@ -72,7 +72,7 @@ help: to force the closure to take ownership of `number` (and any other referenc
    |  
 ```
 
-我们的闭包只借用了 `number`. GTK 中的信号处理器要求其引用具有 "静态(``static`)生命周期"，因此我们不能借用一个只在 `build_ui` 函数作用域中存在的变量。 编译器也给出了解决方法。 在闭包前面添加 `move` 关键字，`number `就会被移入闭包。
+我们的闭包只借用了 `number`. GTK 中的信号处理器要求其引用具有静态( `` `static ``)生命周期，因此我们不能借用一个只在 `build_ui` 函数作用域中存在的变量。 编译器也给出了解决方法。 在闭包前面添加 `move` 关键字，`number `就会被移入闭包。
 
 ```rust ,no_run,compile_fail
 #use gtk::prelude::*;
