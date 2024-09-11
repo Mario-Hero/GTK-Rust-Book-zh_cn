@@ -1,12 +1,12 @@
 # GTK-Rust-Book-zh_cn
 
-本仓库为 The GTK-Rust Book 的中文翻译，正在施工中。现已翻译到“内存管理”部分。
+本仓库为 The GTK-Rust Book 的中文翻译，正在施工中。现已翻译到“设置”部分。
 
 *本翻译基于 [gtk4-rs/book at master(github.com)](https://github.com/gtk-rs/gtk4-rs/tree/master/book) 2024年9月9日版本, 即 `gtk-rs 0.9.1`*
 
 翻译后的文本位于我的[个人网站](https://mario-hero.github.io/gtk-book-zh_cn/)上。This translation is licensed under the [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by/4.0/).
 
-This repo is the Chinese translation of The GTK Rust Book and is currently under construction. It has now been translated to the "Memory Management" section.
+This repo is the Chinese translation of The GTK Rust Book and is currently under construction. It has now been translated to the "Settings" section.
 
 *This translation is based on [gtk4-rs/book at master(github.com)](https://github.com/gtk-rs/gtk4-rs/tree/master/book) version dated September 9th, 2024, which is `gtk-rs 0.9.1`*
 
