@@ -1,7 +1,7 @@
 # 基于 Rust 和 GTK 4 的 GUI 开发
 *作者：Julian Hofer，社区贡献； 翻译：陈竞阁*
 
-*本翻译基于 [gtk4-rs/book at master(github.com)](https://github.com/gtk-rs/gtk4-rs/tree/master/book) 2024年9月9日版本*
+*本翻译基于 [gtk4-rs/book at master(github.com)](https://github.com/gtk-rs/gtk4-rs/tree/master/book) 2024年9月9日版本, 即 `gtk-rs 0.9.1`*
 
 GTK 4 是用 C 语言编写的、流行的、跨平台部件工具箱的最新版本。 多亏了GObject-Introspection技术，GTK 的 API 可以轻松地被各种编程语言所使用。 API 甚至可以描述其参数的所有权！
 
