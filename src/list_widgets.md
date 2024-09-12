@@ -1,10 +1,6 @@
 # 列表控件
 
-有时，您想以某种排列方式显示元素列表。[`gtk::ListBox`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.ListBox.html) 和 [`gtk::FlowBox`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.FlowBox.html) 是两个容器部件，可以让您做到这一点。 `ListBox` 描述的是垂直列表，而 `FlowBox` 描述的是网格。
-
-Sometimes you want to display a list of elements in a certain arrangement.
-[`gtk::ListBox`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.ListBox.html) and [`gtk::FlowBox`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.FlowBox.html) are two container widgets which allow you to do this.
-`ListBox` describes a vertical list and `FlowBox` describes a grid.
+有时，您想以某种排列方式显示元素列表。[`gtk::ListBox`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.ListBox.html) 和 [`gtk::FlowBox`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.FlowBox.html) 是两个容器部件，可以让您做到这一点。 `ListBox` 是垂直列表，而 `FlowBox` 是网格。
 
 让我们通过在 `ListBox` 中添加标签来探索这一概念。 标签将显示从 0 到 100 的整数。
 
