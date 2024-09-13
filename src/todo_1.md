@@ -1,222 +1,180 @@
-# Building a Simple To-Do App
+# 创建一个简单的待办事项应用
 
-After we have learned so many concepts, it is finally time to put them into practice.
-We are going to build a To-Do app!
+在我们学习了这么多概念之后，终于到了付诸实践的时候了。 我们要制作一个待办事项应用程序！
 
-For now, we would already be satisfied with a minimal version.
-An entry to input new tasks and a list view to display them will suffice.
-Something like this:
+目前，我们只需制作一个最小版本即可。 一个输入新任务的输入框和一个显示任务的列表视图就足够了。 类似这样：
 
 <div style="text-align:center"><img src="img/todo_1_mockup.png" alt="To-Do App with a couple of tasks, some of them crossed-off"/></div>
 
 ## Window
 
-This mockup can be described by the following composite template.
+这个模型可以用下面的复合模板来描述。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/resources/window.ui">listings/todo/1/resources/window.ui</a>
+文件：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/resources/window.ui">listings/todo/1/resources/window.ui</a>
 
 ```xml
 {{#rustdoc_include ../listings/todo/1/resources/window.ui}}
 ```
 
+为了使用复合模板，我们创建了一个自定义控件。 它的父类是 `gtk::ApplicationWindow`，因此我们继承自它。 像往常一样，我们必须列出除了 `GObject` 和 `GInitiallyUnowned` 之外的所有[祖先](https://docs.gtk.org/gtk4/class.ApplicationWindow.html#ancestors)和[接口](https://docs.gtk.org/gtk4/class.ApplicationWindow.html#implements)。
 
-In order to use the composite template, we create a custom widget.
-The `parent` is `gtk::ApplicationWindow`, so we inherit from it.
-As usual, we have to list all [ancestors](https://docs.gtk.org/gtk4/class.ApplicationWindow.html#ancestors) and [interfaces](https://docs.gtk.org/gtk4/class.ApplicationWindow.html#implements) apart from `GObject` and `GInitiallyUnowned`.
-
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/window/mod.rs">listings/todo/1/window/mod.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/window/mod.rs">listings/todo/1/window/mod.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/todo/1/window/mod.rs:glib_wrapper}}
 ```
 
-Then we initialize the composite template for `imp::Window`.
-We store references to the entry, the list view as well as the list model.
-This will come in handy when we later add methods to our window.
-After that, we add the typical boilerplate for initializing composite templates.
-We only have to assure that the `class` attribute of the template in `window.ui` matches `NAME`.
+然后初始化 `imp::Window` 的复合模板。 我们存储输入框(entry)、列表视图(list view)和列表模型(list model)的引用。 这将在我们以后为窗口添加方法时派上用场。 之后，我们将添加用于初始化复合模板的典型模板。 我们只需确保 `window.ui` 中模板的 `class` 属性与 `NAME` 匹配即可。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/window/imp.rs">listings/todo/1/window/imp.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/window/imp.rs">listings/todo/1/window/imp.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/todo/1/window/imp.rs:struct_and_subclass}}
 ```
 
-`main.rs` also does not hold any surprises for us.
+`main.rs` 也没有什么新东西。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/main.rs">listings/todo/1/main.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/main.rs">listings/todo/1/main.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/todo/1/main.rs:main}}
 ```
 
-Finally, we specify our resources.
-Here, they already include `task_row.ui` which we will handle later in this chapter.
+最后，我们指定资源。 这里已经包含了 `task_row.ui`，我们将在本章稍后处理。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/resources/resources.gresource.xml">listings/todo/1/resources/resources.gresource.xml</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/resources/resources.gresource.xml">listings/todo/1/resources/resources.gresource.xml</a>
 
 ```xml
 {{#rustdoc_include ../listings/todo/1/resources/resources.gresource.xml}}
 ```
 
 
-## Task Object
+## 任务对象
 
-So far so good.
-The main user interface is done, but the entry does not react to input yet.
-Also, where would the input go?
-We haven't even set up the list model yet.
-Let's do that!
+目前还不错。 主用户界面已经完成，但输入框还不能对输入做出反应。 另外，输入内容会放在哪里呢？ 我们甚至还没有建立列表模型。 让我们开始吧！
 
 <div style="text-align:center"><img src="img/todo_1_empty.png" alt="To-Do app without any content"/></div>
 
-As discussed in the [list widgets chapter](./list_widgets.html),
-we start out by creating a custom GObject.
-This object will store the state of the task consisting of:
-- a boolean describing whether the task is completed or not, and
-- a string holding the task name.
+正如在[列表部件一章](./list_widgets.html)中所讨论的，我们首先要创建一个自定义 GObject。 该对象将存储任务的状态，其中包括：
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/task_object/mod.rs">listings/todo/1/task_object/mod.rs</a>
+- 一个布尔值用于描述任务是否完成
+- 一个字符串存储任务名称
+
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/task_object/mod.rs">listings/todo/1/task_object/mod.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/todo/1/task_object/mod.rs:glib_wrapper_and_new}}
 ```
 
-Unlike the lists chapter, the state is stored in a struct rather than in individual members of `imp::TaskObject`.
-This will be very convenient when saving the state in one of the following chapters.
+与列表一章不同的是，状态存储在一个结构体中，而不是 `imp::TaskObject` 的单个成员中。 这对于在后续章节中保存状态非常方便。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/task_object/mod.rs">listings/todo/1/task_object/mod.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/task_object/mod.rs">listings/todo/1/task_object/mod.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/todo/1/task_object/mod.rs:task_data}}
 ```
 
-We are going to expose `completed` and `content` as properties.
-Since the data is now inside a struct rather than individual member variables we have to add more annotations.
-For each property we additionally specify the name, the type and which member variable of `TaskData` we want to access.  
+我们将把 `completed` 和 `content` 作为属性公开。 由于数据现在是在一个结构体中，而不是在单个成员变量中，因此我们必须添加更多注解。 对于每个属性，我们都要额外指定名称、类型和要访问的 `TaskData` 成员变量。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/task_object/imp.rs">listings/todo/1/task_object/imp.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/task_object/imp.rs">listings/todo/1/task_object/imp.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/todo/1/task_object/imp.rs:struct_and_subclass}}
 ```
 
-## Task Row
+## 任务行
 
-Let's move on to the individual tasks.
-The row of a task should look like this:
+下面我们来看看各个任务。 任务的行应该是这样的：
 
 
 <div style="text-align:center"><img src="img/task_row.png" alt="A single task widget"/></div>
 
-Again, we describe the mockup with a composite template.
+同样，我们用一个复合模板来描述模型。
 
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/resources/task_row.ui">listings/todo/1/resources/task_row.ui</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/resources/task_row.ui">listings/todo/1/resources/task_row.ui</a>
 
 ```xml
 {{#rustdoc_include ../listings/todo/1/resources/task_row.ui}}
 ```
 
-In the code, we [derive](https://docs.gtk.org/gtk4/class.Box.html#hierarchy) `TaskRow` from `gtk:Box`:
+在这个代码中，我们用  `gtk:Box` [实现](https://docs.gtk.org/gtk4/class.Box.html#hierarchy) `TaskRow`：
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/task_row/mod.rs">listings/todo/1/task_row/mod.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/task_row/mod.rs">listings/todo/1/task_row/mod.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/todo/1/task_row/mod.rs:glib_wrapper}}
 ```
 
-In `imp::TaskRow`, we hold references to `completed_button` and `content_label`.
-We also store a mutable vector of bindings.
-Why we need that will become clear as soon as we get to bind the state of `TaskObject` to the corresponding `TaskRow`.
+在 `imp::TaskRow` 中，我们保存了 `completed_button` 和 `content_label` 的引用。 我们还存储了绑定的可变vector。 当我们把 `TaskObject` 的状态绑定到相应的 `TaskRow` 时，就会明白为什么需要这样做了。
 
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/task_row/imp.rs">listings/todo/1/task_row/imp.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/task_row/imp.rs">listings/todo/1/task_row/imp.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/todo/1/task_row/imp.rs:struct_and_subclass}}
 ```
 
-Now we can bring everything together.
-We override the `imp::Window::constructed` in order to set up window contents at the time of its construction.
+现在我们可以将所有内容整合在一起。 我们重写 `imp::Window::constructed`，以便在创建窗口时设置窗口内容。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/window/imp.rs">listings/todo/1/window/imp.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/window/imp.rs">listings/todo/1/window/imp.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/todo/1/window/imp.rs:constructed}}
 ```
 
-Since we need to access the list model quite often, we add the convenience method `Window::tasks` for that.
-In `Window::setup_tasks` we create a new model.
-Then we store a reference to the model in `imp::Window` as well as in `gtk::ListView`.
+由于我们需要经常访问列表模型，为此我们添加了便捷方法 `Window::tasks`. 在 `Window::setup_tasks` 中，我们创建了一个新模型。 然后在 `imp::Window` 和 `gtk::ListView` 中存储对模型的引用。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/window/mod.rs">listings/todo/1/window/mod.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/window/mod.rs">listings/todo/1/window/mod.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/todo/1/window/mod.rs:tasks}}
 ```
 
-We also create a method `new_task` which takes the content of the entry, clears the entry and uses the content to create a new task.
+我们还创建了一个方法 `new_task`，它可以获取条目的内容、清除条目并使用内容创建新任务。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/window/mod.rs">listings/todo/1/window/mod.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/window/mod.rs">listings/todo/1/window/mod.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/todo/1/window/mod.rs:new_task}}
 ```
 
-In `Window::setup_callbacks` we connect to the "activate" signal of the entry.
-This signal is triggered when we press the enter key in the entry.
-Then a new `TaskObject` with the content will be created and appended to the model.
-Finally, the entry will be cleared.
+在 `Window::setup_callbacks` 中，我们连接到输入框的 "activate"（激活）信号。 当我们在输入框中按下回车键时，就会触发该信号。 然后会创建一个包含内容的新 `TaskObject`，并将其附加到模型中。 最后，输入框将被清空。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/window/mod.rs">listings/todo/1/window/mod.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/window/mod.rs">listings/todo/1/window/mod.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/todo/1/window/mod.rs:setup_callbacks}}
 ```
-The list elements for the `gtk::ListView` are produced by a factory.
-Before we move on to the implementation, let's take a step back and think about which behavior we expect here.
-`content_label` of `TaskRow` should follow `content` of `TaskObject`.
-We also want `completed_button` of `TaskRow` follow `completed` of `TaskObject`.
-This could be achieved with expressions similar to what we did in the lists chapter.
+`gtk::ListView` 的列表元素是由一个工厂生产的。 在继续实现之前，让我们退一步思考一下我们期望的行为。 我们还希望 `TaskRow` 的 `completed_button` 跟随 `TaskObject` 的 `completed`。 这可以通过类似于列表一章中的表达式来实现。
 
-However, if we toggle the state of `completed_button` of `TaskRow`, `completed` of `TaskObject` should change too.
-Unfortunately, expressions cannot handle bidirectional relationships.
-This means we have to use property bindings.
-We will need to unbind them manually when they are no longer needed.
+但是，如果我们切换 `TaskRow` 的 `completed_button` 的状态，`TaskObject` 的 `completed` 也应随之改变。 遗憾的是，表达式无法处理双向关系。 这意味着我们必须使用属性绑定。 当不再需要时，我们需要手动解除绑定。
 
-We will create empty `TaskRow` objects in the "setup" step in `Window::setup_factory` and deal with binding in the "bind" and "unbind" steps.
+我们将在 `Window::setup_factory` 的"设置(setup)"步骤中创建空的 `TaskRow` 对象，并在"绑定(bind)"和"解除绑定(unbind)"步骤中处理绑定问题。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/window/mod.rs">listings/todo/1/window/mod.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/window/mod.rs">listings/todo/1/window/mod.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/todo/1/window/mod.rs:setup_factory}}
 ```
 
-Binding properties in `TaskRow::bind` works just like in former chapters.
-The only difference is that we store the bindings in a vector.
-This is necessary because a `TaskRow` will be reused as you scroll through the list.
-That means that over time a `TaskRow` will need to bound to a new `TaskObject` and has to be unbound from the old one.
-Unbinding will only work if it can access the stored [`glib::Binding`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/struct.Binding.html).
+在 `TaskRow::bind` 中绑定属性的工作原理与前几章相同。 唯一不同的是，我们将绑定存储在一个vector(vector)中。 这一点很有必要，因为当您滚动列表时，任务行( `TaskRow` )会被重复使用。 这意味着随着时间的推移，任务行需要绑定到一个新的任务对象，并且必须从旧的任务对象中解除绑定。 只有在能访问存储的 [`glib::Binding`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/struct.Binding.html) 时，解除绑定才会起作用。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/task_row/mod.rs">listings/todo/1/task_row/mod.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/task_row/mod.rs">listings/todo/1/task_row/mod.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/todo/1/task_row/mod.rs:bind}}
 ```
 
-`TaskRow::unbind` takes care of the cleanup.
-It iterates through the vector and unbinds each binding.
-In the end, it clears the vector.
+`TaskRow::unbind` 负责清理工作。 它会遍历 vector 并解除每个绑定。 最后，它会清除该 vector.
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/task_row/mod.rs">listings/todo/1/task_row/mod.rs</a>
+文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/1/task_row/mod.rs">listings/todo/1/task_row/mod.rs</a>
 
 ```rust
 {{#rustdoc_include ../listings/todo/1/task_row/mod.rs:unbind}}
 ```
 
-That was it, we created a basic To-Do app!
-We will extend it with additional functionality in the following chapters.
+就这样，我们创建了一个基本的待办事项应用程序！ 在接下来的章节中，我们将添加其他功能以对其进行扩展。
 
 <div style="text-align:center">
  <video autoplay muted loop>
