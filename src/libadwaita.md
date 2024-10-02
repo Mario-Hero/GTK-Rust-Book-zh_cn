@@ -1,43 +1,39 @@
 # Libadwaita
 
-If you target a certain platform with your GUI, you will want to follow the platform's [Human Interface Guidelines](https://en.wikipedia.org/wiki/Human_interface_guidelines) (HIG).
-With a GTK application, chances are the platform is either [elementary OS](https://elementary.io) or [GNOME](https://www.gnome.org/).
-In this chapter we will discuss how to follow GNOME's [HIG](https://developer.gnome.org/hig/) with [libadwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1-latest/). 
+如果您的图形用户界面以某个平台为目标，您就需要遵循该平台的[《人机界面指南 (Human Interface Guidelines)》](https://en.wikipedia.org/wiki/Human_interface_guidelines) （HIG）。 对于 GTK 应用程序而言，该平台可能是 [elementary OS](https://elementary.io/) 或 [GNOME](https://www.gnome.org/)。 在本章中，我们将讨论如何使用  [libadwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1-latest/) 遵循 GNOME 的 [HIG](https://developer.gnome.org/hig/). 
 
-Libadwaita is a library augmenting GTK 4 which:
-- provides widgets to better follow GNOME's HIG
-- provides widgets to let applications [change their layout ](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/adaptive-layouts.html) based on the available space
-- integrates the Adwaita [stylesheet](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/styles-and-appearance.html)
-- allows runtime recoloring with [named colors](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1-latest/named-colors.html)
-- adds [API](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/struct.StyleManager.html) to support the cross-desktop dark style preference
+Libadwaita 是一个补充 GTK 4 的库：
+- 提供更好地遵循 GNOME 的 HIG 的组件
+- 提供让应用程序根据可用空间[改变布局](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/adaptive-layouts.html)的组件
+- 集成了 Adwaita [样式表](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/styles-and-appearance.html)
+- 允许在运行时使用[命名了的颜色(named colors)](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1-latest/named-colors.html)重新着色
+- 添加了[API](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/struct.StyleManager.html) 以支持跨桌面暗黑颜色风格
 
-In order to use the Rust bindings, add the [libadwaita crate](https://crates.io/crates/libadwaita) as dependency by executing:
+要使用 Rust 绑定，请执行以下命令，将 [libadwaita crate](https://crates.io/crates/libadwaita) 添加到依赖：
 
 ```
 cargo add libadwaita --rename adw --features v1_5
 ```
 
-The versions of the `gtk4` and `libadwaita` crates need to be synced.
-Just remember that when you update one of them to the newest version to update the other one as well. 
+`gtk4` 和 `libadwaita` crate 的版本需要同步。 只需记住，当你将其中一个更新到最新版本时，也要更新另一个。
 
-Installation of the library itself works similar to GTK.
-Just follow the installation instruction that is suitable for your distribution.
+库本身的安装与 GTK 类似。 只需按照适合您的发行版的安装说明进行安装即可。
 
 ## Linux
 
-Fedora and derivatives:
+Fedora 及其衍生版本：
 
 ```
 sudo dnf install libadwaita-devel
 ```
 
-Debian and derivatives:
+Debian 及其衍生版本：
 
 ```
 sudo apt install libadwaita-1-dev
 ```
 
-Arch and derivatives:
+Arch 及其衍生版本：
 
 ```
 sudo pacman -S libadwaita
@@ -51,20 +47,18 @@ brew install libadwaita
 
 ## Windows
 
-## If using gvsbuild
+## 如果使用 gvsbuild
 
-If you used `gvsbuild` to build GTK 4:
+如果你使用 `gvsbuild` 来构建GTK 4:
 
 ```
 gvsbuild build libadwaita librsvg
 ```
 
 
-## If building manually with MSVC:
+## 如果使用 MSVC 手动构建:
 
-From the Windows start menu, search for `x64 Native Tools Command Prompt for VS 2019`.
-That will open a terminal configured to use MSVC x64 tools.
-From there, run the following commands:
+在 Windows 开始菜单中，搜索  `x64 Native Tools Command Prompt for VS 2019`，这将打开一个配置为使用 MSVC x64 工具的终端。 在此运行以下命令：
 
 ```
 cd /
@@ -74,21 +68,20 @@ meson setup builddir -Dprefix=C:/gnome -Dintrospection=disabled -Dvapi=false
 meson install -C builddir
 ```
 
-## Work around missing icons
+## 解决图标缺失问题
 
-[This workaround is needed for GTK < 4.10](https://gitlab.gnome.org/GNOME/gtk/-/blob/34b9ec5be2f3a38e1e72c4d96f130a2b14734121/NEWS#L60)
-due to [this issue](https://gitlab.gnome.org/GNOME/gtk/-/issues/5303).
+对于[此问题](https://gitlab.gnome.org/GNOME/gtk/-/issues/5303)，GTK < 4.10 可以使用该[解决方法](https://gitlab.gnome.org/GNOME/gtk/-/blob/34b9ec5be2f3a38e1e72c4d96f130a2b14734121/NEWS#L60)。
 
 ### gvsbuild
 
-From a command prompt:
+使用命令提示符：
 
 ```
 xcopy /s /i C:\gtk-build\gtk\x64\release\share\icons\hicolor\scalable\apps C:\gtk-build\gtk\x64\release\share\icons\hicolor\scalable\actions
 gtk4-update-icon-cache.exe -t -f C:\gtk-build\gtk\x64\release\share\icons\hicolor
 ```
 
-### Manually with MSVC
+### MSVC 手动构建
 
 
 ```
