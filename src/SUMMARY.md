@@ -21,7 +21,7 @@
 - [复合模板](composite_templates.md)
 - [创建一个简单的待办事项应用](todo_1.md)
 - [Actions](actions.md)
-- [Manipulating State of To-Do App](todo_2.md)
+- [控制待办事项应用的状态](todo_2.md)
 - [CSS](css.md)
 - [Libadwaita](libadwaita.md)
     - [Let To-Do App use Libadwaita](todo_3.md)
