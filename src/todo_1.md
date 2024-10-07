@@ -6,7 +6,7 @@
 
 <div style="text-align:center"><img src="img/todo_1_mockup.png" alt="To-Do App with a couple of tasks, some of them crossed-off"/></div>
 
-## Window
+## 窗口
 
 这个模型可以用下面的复合模板来描述。
 
