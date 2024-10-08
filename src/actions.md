@@ -112,9 +112,7 @@
 
 让我们修改我们的小程序来演示这些情况。 首先，我们扩展 `setup_actions`。 对于不带参数或状态的动作，我们可以使用预定义的 "window.close" 动作。 因此，我们无需在此处添加任何内容。
 
-With the action "button-frame", we manipulate the "has-frame" property of `button`.
-Here, the convention is that actions with no parameter and boolean state should behave like toggle actions.
-This means that the caller can expect the boolean state to toggle after activating the action. Luckily for us, that is the default behavior for [`gio::PropertyAction`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/struct.PropertyAction.html) with a boolean property.
+通过动作 "button-frame"，我们可以操作按钮的 "has-frame" 属性。 这里的惯例是，不带参数并且为布尔状态的操作应该像切换操作一样。 这意味着调用者可以期待布尔状态在激活动作后切换。 幸运的是，这正是带有布尔属性的 [`gio::PropertyAction`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/struct.PropertyAction.html) 的默认行为。
 
 文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/actions/6/window/mod.rs">listings/actions/6/window/mod.rs</a>
 
@@ -122,17 +120,9 @@ This means that the caller can expect the boolean state to toggle after activati
 {{#rustdoc_include ../listings/actions/6/window/mod.rs:action_button_frame}}
 ```
 
-> A `PropertyAction` is useful when you need an action that manipulates the property of a GObject.
-> The property then acts as the state of the action.
-> As mentioned above, if the property is a boolean the action has no parameter and toggles the property on activation.
-> In all other cases, the action has a parameter of the same type as the property.
-> When activating the action, the property gets set to the same value as the parameter of the action.
+> 当您需要一个操作 GObject 属性的动作时，`PropertyAction` 就会派上用场。 属性将作为动作的状态。 如上所述，如果属性是布尔型，则动作没有参数，并在激活时切换属性。 在所有其他情况下，操作都有一个与属性类型相同的参数。 激活动作时，属性会被设置为与动作参数相同的值。
 
-
-Finally, we add "win.orientation", an action with string parameter and string state.
-This action can be used to change the orientation of `gtk_box`.
-Here the convention is that the state should be set to the given parameter.
-We don't need the action state to implement orientation switching, however it is useful for making the menu display the current orientation.
+最后，我们添加了 "win.orientation"，一个带有字符串参数和字符串状态的动作。 该操作可用于改变 `gtk_box` 的朝向。 这里的惯例是状态(state)应设置为给定的参数。 我们并不需要动作状态来实现方向切换，但它在使菜单显示当前朝向时非常有用。
 
 文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/actions/6/window/mod.rs">listings/actions/6/window/mod.rs</a>
 
@@ -140,8 +130,7 @@ We don't need the action state to implement orientation switching, however it is
 {{#rustdoc_include ../listings/actions/6/window/mod.rs:action_orientation}}
 ```
 
-Even though [`gio::Menu`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/struct.Menu.html) can also be created with the bindings, the most convenient way is to use the interface builder for that.
-We do that by adding the menu in front of the template.
+尽管 [`gio::Menu`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/struct.Menu.html) 也可以通过绑定创建，但最方便的方法还是使用界面生成器。 我们可以在模板前添加菜单。
 
 文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/actions/6/resources/window.ui">listings/actions/6/resources/window.ui</a>
 
@@ -189,24 +178,21 @@ We do that by adding the menu in front of the template.
          <property name="orientation">vertical</property>
 ```
 
-Since we connect the menu to the [`gtk::MenuButton`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.MenuButton.html) via the [menu-model](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.MenuButton.html#menu-model) property, the `Menu` is expected to be a [`gtk::PopoverMenu`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.PopoverMenu.html).
-The [documentation](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.PopoverMenu.html) for `PopoverMenu` also explains its `xml` syntax for the interface builder.
+由于我们通过 [menu-model](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.MenuButton.html#menu-model) 属性将菜单连接到了  [`gtk::MenuButton`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.MenuButton.html) ，因此菜单(`Menu`)应为  [`gtk::PopoverMenu`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.PopoverMenu.html). `PopoverMenu` 的[文档](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.PopoverMenu.html)还为界面生成器解释了其 xml 语法。
 
-Also note how we specified the target:
+还要注意我们是如何指定目标的：
 
 ```xml
 <attribute name="target">Horizontal</attribute>
 ```
 
-String is the default type of the target which is why we did not have to specify a type.
-With targets of other types you need to manually specify the correct [GVariant format string](https://docs.gtk.org/glib/gvariant-format-strings.html).
-For example, an `i32` variable with value "5" would correspond to this:
+字符串是目标的默认类型，因此我们无需指定类型。 对于其他类型的目标，则需要手动指定正确的 [GVariant 格式字符串](https://docs.gtk.org/glib/gvariant-format-strings.html)。 例如，一个值为 "5 "的 `i32` 变量对应的格式如下：
 
 ```xml
 <attribute name="target" type="i">5</attribute>
 ```
 
-This is how the app looks in action:
+这就是该应用程序的实际效果：
 
 
 <div style="text-align:center">
@@ -216,15 +202,11 @@ This is how the app looks in action:
  </video>
 </div>
 
->We changed the icon of the `MenuButton` by setting its property "icon-name" to "open-menu-symbolic".
->You can find more icons with the [Icon Library](https://flathub.org/apps/org.gnome.design.IconLibrary).
->They can be embedded with [`gio::Resource`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/struct.Resource.html) and then be referenced within the composite templates (or other places).
+>我们将菜单按钮(`MenuButton`)的属性 "icon-name" 设置为 "open-menu-symbolic"，从而更改了菜单按钮的图标。 您可以在[图标库](https://flathub.org/apps/org.gnome.design.IconLibrary)中找到更多图标。 这些图标可以嵌入  [`gio::Resource`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/struct.Resource.html) ，然后在合成模板（或其他地方）中引用。
 
-## Settings
+## 设置(Settings)
 
-The menu entries nicely display the state of our stateful actions, but after the app is closed, all changes to that state are lost.
-As usual, we solve this problem with [`gio::Settings`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/struct.Settings.html).
-First we create a schema with settings corresponding to the stateful actions we created before.
+菜单项很好地显示了有状态动作的状态，但在应用程序关闭后，对该状态的所有更改都会丢失。 像往常一样，我们使用 [`gio::Settings`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/struct.Settings.html) 解决这个问题。 首先，我们创建一个 schema，其中包含与之前创建的有状态操作相对应的设置。
 
 文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/actions/7/org.gtk_rs.Actions7.gschema.xml">listings/actions/7/org.gtk_rs.Actions7.gschema.xml</a>
 
@@ -232,9 +214,7 @@ First we create a schema with settings corresponding to the stateful actions we 
 {{#rustdoc_include ../listings/actions/7/org.gtk_rs.Actions7.gschema.xml}}
 ```
 
-Again, we install the schema as described in the settings [chapter](./settings.html).
-Then we add the settings to `imp::Window`.
-Since [`gio::Settings`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/struct.Settings.html) does not implement `Default`, we wrap it in a [`std::cell::OnceCell`](https://doc.rust-lang.org/std/cell/struct.OnceCell.html).
+同样，我们按照[设置一章]()中描述来安装 schema. 然后将设置添加到 `imp::Window`. 由于 [`gio::Settings`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/struct.Settings.html) 没有实现 `Default`，我们将其封装在 [`std::cell::OnceCell`](https://doc.rust-lang.org/std/cell/struct.OnceCell.html) 中。
 
 文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/actions/7/window/imp.rs">listings/actions/7/window/imp.rs</a>
 
@@ -242,7 +222,7 @@ Since [`gio::Settings`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/st
 {{#rustdoc_include ../listings/actions/7/window/imp.rs:imp_struct}}
 ```
 
-Now we create functions to make it easier to access settings.
+现在，我们创建一些函数，使设置更容易访问。
 
 文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/actions/7/window/mod.rs">listings/actions/7/window/mod.rs</a>
 
@@ -250,9 +230,7 @@ Now we create functions to make it easier to access settings.
 {{#rustdoc_include ../listings/actions/7/window/mod.rs:settings}}
 ```
 
-
-Creating stateful actions from setting entries is so common that `Settings` provides a method for that exact purpose.
-We create actions with the[ `create_action`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/prelude/trait.SettingsExt.html#tymethod.create_action) method and then add them to the action group of our window.
+通过设置条目创建有状态的动作非常常见，因此`设置(Settings)`提供了一种方法来实现这一目的。 我们使用 [ `create_action`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/prelude/trait.SettingsExt.html#tymethod.create_action) 方法创建动作，然后将其添加到窗口的动作组中。
 
 文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/actions/7/window/mod.rs">listings/actions/7/window/mod.rs</a>
 
@@ -260,11 +238,9 @@ We create actions with the[ `create_action`](https://gtk-rs.org/gtk-rs-core/stab
 {{#rustdoc_include ../listings/actions/7/window/mod.rs:settings_create_actions}}
 ```
 
-Since actions from `create_action` follow the aforementioned conventions, we can keep further changes to a minimum.
-The action "win.button-frame" toggles its state with each activation and the state of the "win.orientation" action follows the given parameter.
+由于来自 `create_action` 的动作遵循上述约定，我们可以尽量减少进一步的改动。 每次激活时，"win.button-frame" 动作都会切换其状态，而 "win.orientation" 动作的状态则遵循给定的参数。
 
-We still have to specify what should happen when the actions are activated though.
-For the stateful actions, instead of adding callbacks to their "activate" signals, we bind the settings to properties we want to manipulate.
+不过，我们仍需指定动作激活时应发生的情况。 对于有状态的操作，我们不用为它的"激活"信号添加回调，而是将设置绑定到我们要操作的属性上。
 
 文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/actions/7/window/mod.rs">listings/actions/7/window/mod.rs</a>
 
@@ -272,7 +248,7 @@ For the stateful actions, instead of adding callbacks to their "activate" signal
 {{#rustdoc_include ../listings/actions/7/window/mod.rs:bind_settings}}
 ```
 
-Finally, we make sure that `bind_settings` is called within `constructed`.
+最后，我们要确保 `bind_settings` 在构造(`constructed`)内部被调用。
 
 文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/actions/7/window/imp.rs">listings/actions/7/window/imp.rs</a>
 
@@ -280,5 +256,4 @@ Finally, we make sure that `bind_settings` is called within `constructed`.
 {{#rustdoc_include ../listings/actions/7/window/imp.rs:object_impl}}
 ```
 
-Actions are extremely powerful, and we are only scratching the surface here.
-If you want to learn more about them, the [GNOME developer documentation](https://developer.gnome.org/documentation/tutorials/actions.html) is a good place to start.
+动作的功能非常强大，我们在此只是浅尝辄止。 如果您想了解更多，[GNOME 开发者文档](https://developer.gnome.org/documentation/tutorials/actions.html)是一个很好的开始。
