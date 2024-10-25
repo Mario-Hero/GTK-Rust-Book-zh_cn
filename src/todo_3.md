@@ -1,31 +1,28 @@
-# Let To-Do App use Libadwaita
+# 让待办事项应用使用 Libadwaita
 
-Within this chapter we will adapt our To-Do app so that it follows GNOME's [HIG](https://developer.gnome.org/hig/).
-Let's start by installing Libadwaita and adding the `libadwaita` crate to our dependencies as explained in the [previous chapter](libadwaita.html).
+在本章中，我们将调整待办事项应用程序，使其遵循 GNOME 的 [HIG](https://developer.gnome.org/hig/). 首先，让我们安装 Libadwaita，并将 `libadwaita` crate 添加到我们的依赖关系中，如[上一章](libadwaita.html)所述。
 
-The simplest way to take advantage of Libadwaita is by replacing [`gtk::Application`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.Application.html) with [`adw::Application`](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/struct.Application.html).
+使用 Libadwaita 的最简单方法是将 [`gtk::Application`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.Application.html) 替换为 [`adw::Application`](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/struct.Application.html).
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/5/main.rs">listings/todo/5/main.rs</a>
+文件名： <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/5/main.rs">listings/todo/5/main.rs</a>
 
 ```rust,no_run,noplayground
 {{#rustdoc_include ../listings/todo/5/main.rs:main}}
 ```
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/5/window/mod.rs">listings/todo/5/window/mod.rs</a>
+文件名： <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/5/window/mod.rs">listings/todo/5/window/mod.rs</a>
 
 ```rust,no_run,noplayground
 {{#rustdoc_include ../listings/todo/5/window/mod.rs:new}}
 ```
 
-`adw::Application` calls [`adw::init`](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/functions/fn.init.html) internally and makes sure that translations, types, stylesheets, and icons are set up properly for Libadwaita. 
-It also loads stylesheets automatically from resources as long as they are named [correctly](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/struct.Application.html#automatic-resources).
+`adw::Application` 在内部调用 [`adw::init`](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/functions/fn.init.html)，确保为 Libadwaita 正确设置翻译、类型、样式表和图标。 只要命名[正确]([Application in libadwaita - Rust](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/struct.Application.html#automatic-resources))，它还会自动从资源中加载样式表。
 
-Looking at our To-Do app we can see that the looks of its widgets changed.
-This is because the `Default` stylesheet provided by GTK has been replaced with the `Adwaita` stylesheet provided by Libadwaita.
+看看我们的待办事项应用，我们可以发现其控件的外观发生了变化。 这是因为 GTK 提供的`默认`样式表已被 Libadwaita 提供的 `Adwaita` 样式表所取代。
 
 <div style="text-align:center"><img src="img/todo_change_4_5.png" alt="Transformation of To-Do app"/></div>
 
-Also, our app now switches to the dark style together with the rest of the system.
+此外，我们的应用现在可以与系统一起切换到暗黑风格。
 
 <div style="text-align:center">
  <video autoplay muted loop>
@@ -34,29 +31,19 @@ Also, our app now switches to the dark style together with the rest of the syste
  </video>
 </div>
 
-
 ## Boxed lists
 
-Of course Libadwaita is more than just a couple of stylesheets and a [`StyleManager`](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/struct.StyleManager.html).
-But before we get to the interesting stuff, we will make our lives easier for the future by replacing all occurrences of `gtk::prelude` and `gtk::subclass::prelude` with [`adw::prelude`](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/prelude/index.html) and [`adw::subclass::prelude`](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/subclass/prelude/index.html).
-This works because the `adw` preludes, in addition to the Libadwaita-specific traits, re-export the corresponding `gtk` preludes.
+当然，Libadwaita 不仅仅是几个样式表和一个[`样式管理器`](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/struct.StyleManager.html)。 但在我们进入有趣的内容之前，我们将用 `adw::prelude` 和 `adw::subclass::prelude` 替换所有出现的[`adw::prelude`](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/prelude/index.html) 和 [`adw::subclass::prelude`](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/subclass/prelude/index.html)，让我们的未来生活更轻松。 这是因为 `adw` prelude 除了 Libadwaita 特有的 trait 外，还重新导出了相应的 `gtk` prelude。
 
-Now we are going let our tasks follow the [boxed lists pattern](https://developer.gnome.org/hig/patterns/containers/boxed-lists.html).
-The HIG does not require us to use this style and there's a good reason for that: it is incompatible with recycling lists.
-This means they cannot be used with [list views](https://developer.gnome.org/hig/patterns/containers/list-column-views.html) and are therefore only appropriate for relatively small lists.
+现在，我们要让我们的任务项采用 [boxed lists pattern](https://developer.gnome.org/hig/patterns/containers/boxed-lists.html). HIG 并不要求我们使用这种样式，这是有原因的：它与循环列表不兼容。 这意味着它们不能与 [list views]([List &amp; Column Views - GNOME Human Interface Guidelines](https://developer.gnome.org/hig/patterns/containers/list-column-views.html)) 一起使用，因此只适用于相对较小的列表。
 
-> Try to add tasks programmatically and see how many of them you have to add until the UI noticeably slows down.
-> Determine for yourself if you think that is a reasonable number or if we should have rather stuck with list views.
+> 尝试用代码添加任务，看看需要添加多少个任务才能使用户界面明显变慢。 自己判断一下这个数字是否合理，或者我们是否应该坚持使用列表视图。
 
-We can use boxed lists by using [`gtk::ListBox`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.ListBox.html) instead of [`gtk::ListView`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.ListView.html).
-We will also add the [`boxed-list`](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/boxed-lists.html) style class provided by Libadwaita.
+我们可以使用 [`gtk::ListBox`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.ListBox.html) 代替 [`gtk::ListView`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.ListView.html) 来使用 boxed lists. 我们还将添加 Libadwaita 提供的[`boxed-list`](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/boxed-lists.html)样式类。
 
-Let's implement all these changes in the `window.ui` file.
-All of the changes are confined within the second child of the `ApplicationWindow`.
-To see the complete file, just click on the link after "Filename".
+让我们在 `window.ui` 文件中实现所有这些更改。 所有更改都限制在 `ApplicationWindow` 的第二个子对象中。 要查看完整文件，只需点击"文件名"后面的链接。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/6/resources/window.ui">listings/todo/6/resources/window.ui</a>
-
+文件名： <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/6/resources/window.ui">listings/todo/6/resources/window.ui</a>
 
 ```xml
 <child>
@@ -97,58 +84,48 @@ Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master
 </child>
 ```
 
-In order to follow the boxed list pattern, we switched to [`gtk::ListBox`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.ListBox.html), set its property "selection-mode" to "none" and added the `boxed-list` style class. 
+为了遵循 boxed list 模式，我们改用了 [`gtk::ListBox`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.ListBox.html), 将其属性 "selection-mode"设置为 "none"，并添加了`boxed-list`样式类。
 
-Let's continue with `window/imp.rs`.
-The member variable `tasks_list` now describes a `ListBox` rather than a `ListView`.
+让我们继续查看 `window/imp.rs`. 成员变量 `tasks_list` 现在描述的是 `ListBox` 而不是 `ListView`.
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/6/window/imp.rs">listings/todo/6/window/imp.rs</a>
+文件名： <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/6/window/imp.rs">listings/todo/6/window/imp.rs</a>
 
 ```rust,no_run,noplayground
 {{#rustdoc_include ../listings/todo/6/window/imp.rs:window}}
 ```
 
+现在我们转到 `window/mod.rs`. `ListBox` 可以很好地支持模型(model)，但在没有任何控件回收的情况下，我们不再需要工厂。 `setup_factory` 可以被安全地删除。要设置 `ListBox`，我们需要在 `setup_tasks` 中调用 `bind_model`. 在这里，我们指定了模型，以及描述如何将给定的 GObject 转换为 list box 可以显示的控件的闭包。
 
-
-We now move on to `window/mod.rs`.
-`ListBox` supports models just fine, but without any widget recycling we don't need factories anymore.
-`setup_factory` can therefore be safely deleted.
-To setup the `ListBox`, we call `bind_model` in `setup_tasks`.
-There we specify the model, as well as a closure describing how to transform the given GObject into a widget the list box can display. 
-
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/6/window/mod.rs">listings/todo/6/window/mod.rs</a>
+文件名： <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/6/window/mod.rs">listings/todo/6/window/mod.rs</a>
 
 ```rust,no_run,noplayground
 {{#rustdoc_include ../listings/todo/6/window/mod.rs:bind_model}}
 ```
 
-We still have to specify the `create_task_row` method.
-Here, we create an [`adw::ActionRow`](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/struct.ActionRow.html) with a [`gtk::CheckButton`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.CheckButton.html) as activatable widget.
-Without recycling, a GObject will always belong to the same widget.
-That means we can just bind their properties without having to worry about unbinding them later on.
+我们仍然需要指定 `create_task_row` 方法。 在这里，我们创建了一个以 [`gtk::CheckButton`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.CheckButton.html) 作为可激活控件的 [`adw::ActionRow`](https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/struct.ActionRow.html). 如果没有回收，GObject 将始终属于同一个控件。 这意味着我们可以直接绑定它们的属性，而不必担心以后会取消绑定。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/6/window/mod.rs">listings/todo/6/window/mod.rs</a>
+文件名： <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/6/window/mod.rs">listings/todo/6/window/mod.rs</a>
 
 ```rust,no_run,noplayground
 {{#rustdoc_include ../listings/todo/6/window/mod.rs:create_task_row}}
 ```
 
-When using boxed lists, you also have to take care to hide the `ListBox` when there is no task present.
+使用 boxed lists 时，还必须注意在没有任务时隐藏 `ListBox`. 
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/6/window/mod.rs">listings/todo/6/window/mod.rs</a>
+文件名： <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/6/window/mod.rs">listings/todo/6/window/mod.rs</a>
 
 ```rust,no_run,noplayground
 {{#rustdoc_include ../listings/todo/6/window/mod.rs:connect_items_changed}}
 ```
 
-Finally, we define the `set_task_list_visible` method.
+最后，我们定义了 `set_task_list_visible` 方法。
 
-Filename: <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/6/window/mod.rs">listings/todo/6/window/mod.rs</a>
+文件名： <a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/todo/6/window/mod.rs">listings/todo/6/window/mod.rs</a>
 
 ```rust,no_run,noplayground
 {{#rustdoc_include ../listings/todo/6/window/mod.rs:set_task_list_visible}}
 ```
 
-This is how the boxed list style looks like in our app.
+这就是 boxed list 样式在我们应用程序中的样子。
 
 <div style="text-align:center"><img src="img/todo_6.png" alt="The To-Do app using libadwaita"/></div>
