@@ -1,6 +1,6 @@
 # GTK-Rust-Book-zh_cn
 
-本仓库为 The GTK-Rust Book 的中文翻译，正在施工中。现已翻译到“创建一个简单的待办事项应用”部分。
+本仓库为 The GTK-Rust Book 的中文翻译。
 
 *本翻译基于 [gtk4-rs/book at master(github.com)](https://github.com/gtk-rs/gtk4-rs/tree/master/book) 2024年9月9日版本, 即 `gtk-rs 0.9.1`*
 
