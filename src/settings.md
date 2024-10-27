@@ -66,7 +66,8 @@
   <p>A video which shows that the app can now store the app state</p>
  </video>
 </div>
-现在，即使关闭应用程序，`Switch`也会保留其状态。 但我们可以做得更好。 开关有一个属性 "active"，而  `Settings` 允许我们将属性与特定设置绑定。 因此，我们就来做这件事。
+
+现在，即使关闭应用程序，`Switch` 也会保留其状态。 但我们可以做得更好。 开关有一个属性 "active"，而  `Settings` 允许我们将属性与特定设置绑定。 因此，我们就来做这件事。
 
 我们可以删除初始化 `Switch` 之前的 [`boolean`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/gio/prelude/trait.SettingsExt.html#tymethod.boolean) 调用以及 [`connect_state_set`](https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.Switch.html#method.connect_state_set) 调用。 然后，我们通过指定键、对象和属性名称将设置绑定到属性。 
 

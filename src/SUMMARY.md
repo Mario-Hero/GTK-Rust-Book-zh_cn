@@ -26,4 +26,4 @@
 - [CSS](css.md)
 - [Libadwaita](libadwaita.md)
   - [让待办事项应用使用 Libadwaita](todo_3.md)
-  - [添加收藏夹](todo_4.md)
+  - [添加“收藏夹”功能](todo_4.md)
