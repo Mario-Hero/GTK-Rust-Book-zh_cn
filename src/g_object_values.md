@@ -1,6 +1,6 @@
 # 泛型值
 
-一些与 GObject 相关的函数依赖于其参数或返回参数的泛型。 由于 GObject 的内省是通过 C 语言接口工作的，因此这些函数不能依赖于任何强大的 Rust 概念。 在这种情况下，需要使用[`glib::Value`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/value/struct.Value.html) 或 [`glib::Variant`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/variant/struct.Variant.html).
+一些与 GObject 相关的函数依赖于其参数或返回参数的泛型。 由于 GObject 的内省（introspection）是通过 C 语言接口工作的，因此这些函数不能依赖于任何强大的 Rust 概念。 在这种情况下，需要使用[`glib::Value`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/value/struct.Value.html) 或 [`glib::Variant`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/variant/struct.Variant.html).
 
 
 
@@ -24,7 +24,7 @@ enum Value <T> {
 }
 ```
 
-例如，您可以这样使用`Value` 代表  `i32` 的值。
+例如，您可以这样使用 `Value` 代表  `i32` 的值。
 
 文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_values/1/main.rs">listings/g_object_values/1/main.rs</a>
 
@@ -54,7 +54,7 @@ enum Value <T> {
 
 ## Variant
 
-当数据需要序列化时，例如将数据发送到另一个进程或通过网络，或将数据存储到磁盘时，就会用到`Variant`. 虽然 `GVariant` 支持任意复杂的类型，但 Rust 绑定目前仅限于`bool`, `u8`, `i16`, `u16`, `i32`, `u32`, `i64`, `u64`, `f64`, `&str`/`String` 和 [`VariantDict`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/struct.VariantDict.html). 上述类型的容器也可以使用，如 `HashMap`、`Vec`、`Option`、最多 16 个元素的元组(typle)和 `Variant`。 只要 Rust 结构体的成员可以用`Variant`表示，`Variant`甚至可以从 Rust 结构体[派生](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib_macros/derive.Variant.html#)。
+当数据需要序列化时，例如将数据发送到另一个进程、发送到网络上，或将数据存储到磁盘时，就会用到`Variant`. 虽然 `GVariant` 支持任意复杂的类型，但 Rust 绑定目前仅限于`bool`, `u8`, `i16`, `u16`, `i32`, `u32`, `i64`, `u64`, `f64`, `&str`/`String` 和 [`VariantDict`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/struct.VariantDict.html). 上述类型的容器也可以使用，如 `HashMap`、`Vec`、`Option`、最多 16 个元素的元组(typle)和 `Variant`。 只要 Rust 结构体的成员可以用`Variant`表示，`Variant`甚至可以从 Rust 结构体[派生](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib_macros/derive.Variant.html#)。
 
 在最简单的情况下，将 Rust 类型转换为 `Variant` 或反向转换，与处理 `Value` 的方式非常相似。
 
