@@ -183,7 +183,7 @@ error[E0594]: cannot assign to `number`, as it is a captured variable in a `Fn` 
 
 如果我们现在点击其中一个按钮，另一个按钮的标签就会改变。 
 
-但是，哎呀！ 我们是不是忘了引用计数系统的一个恼人之处？是的：[循环引用](https://doc.rust-lang.org/book/ch15-06-reference-cycles.html).。`button_increase` 持有 `button_decrease` 的强引用，反之亦然。 强引用可以防止引用的值被释放。 如果这个链条导致一个循环，那么这个循环中的所有值都不会被释放。 使用弱引用可以打破这种循环，因为弱引用不会使其值存活，而是提供了一种方法，可以在该值仍然存活时检索强引用。 由于我们希望应用程序释放不需要的内存，因此我们应该在按钮上使用弱引用。
+但是，哎呀！ 我们是不是忘了引用计数系统的一个恼人之处？是的：[循环引用](https://doc.rust-lang.org/book/ch15-06-reference-cycles.html)。`button_increase` 持有 `button_decrease` 的强引用，反之亦然。 强引用可以防止引用的值被释放。 如果这个链条导致一个循环，那么这个循环中的所有值都不会被释放。 使用弱引用可以打破这种循环，因为弱引用不会使其值存活，而是提供了一种方法，可以在该值仍然存活时检索强引用。 由于我们希望应用程序释放不需要的内存，因此我们应该在按钮上使用弱引用。
 
 文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/g_object_memory_management/5/main.rs">listings/g_object_memory_management/5/main.rs</a>
 
