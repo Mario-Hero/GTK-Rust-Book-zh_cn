@@ -75,6 +75,7 @@ cargo add async-channel
   <p>The button now stops being responsive for 10 seconds after being pressed</p>
  </video>
 </div>
+
 如果任务本质上是异步的怎么办？ 让我们尝试用 [`glib::timeout_future_seconds`](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/fn.timeout_future_seconds.html) 代替 `std::thread::sleep` 来表示我们的任务。 它返回一个 [`std::future::Future`](https://doc.rust-lang.org/std/future/trait.Future.html)，这意味着我们可以在异步上下文中等待它。 转换后的代码在外观和行为上与多线程代码非常相似。
 
 文件名：<a class=file-link href="https://github.com/gtk-rs/gtk4-rs/blob/master/book/listings/main_event_loop/4/main.rs">listings/main_event_loop/4/main.rs</a>
